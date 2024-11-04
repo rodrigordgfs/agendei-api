@@ -5,7 +5,7 @@ import router from "./routes.js";
 
 const app = express();
 
-const allowedOrigins = [`http://localhost:${process.env.PORT}`, 'https://agendei-api-zaiu.onrender.com'];
+const allowedOrigins = [`http://localhost:5173`, 'https://agendei-api-zaiu.onrender.com'];
 
 const corsOptions = {
   origin: (origin, callback) => {

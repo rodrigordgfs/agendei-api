@@ -4,8 +4,8 @@ import serviceRepository from "../repositories/services.repository.js";
 import userRepository from "../repositories/user.repository.js";
 import AppError from "../utils/error.js";
 
-const getAppointments = async (id_user) => {
-  return await appointmentsRepository.getAppointments(id_user);
+const getAppointments = async (id_user, startDate, endDate, doctor) => {
+  return await appointmentsRepository.getAppointments(id_user, startDate, endDate, doctor);
 };
 
 const getAppointmentById = async (id) => {

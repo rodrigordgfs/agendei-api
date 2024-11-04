@@ -1,8 +1,8 @@
 import appointmentsService from "../services/appointments.service.js";
 
 const getAppointments = async (req, res) => {
-  const { id_user } = req.query;
-  const appointments = await appointmentsService.getAppointments(id_user);
+  const { id_user, startDate, endDate, doctor } = req.query;
+  const appointments = await appointmentsService.getAppointments(id_user, startDate, endDate, doctor);
   res.status(200).json(appointments);
 };
 

@@ -1,9 +1,12 @@
 import database from "../config/database.js";
 
-const getAppointments = async (id_user) => {
+const getAppointments = async (id_user, startDate, endDate, doctor) => {
+  console.log(id_user, startDate, endDate, doctor);
+
   try {
-    const query = `
+    let query = `
       SELECT 
+        u.name AS user,
         a.id_appointment,
         s.description AS service,
         d.name AS doctor,
@@ -14,12 +17,40 @@ const getAppointments = async (id_user) => {
       FROM appointments a
       JOIN doctors d ON a.id_doctor = d.id_doctor
       JOIN services s ON a.id_service = s.id_service
+      JOIN users u ON a.id_user = u.id_user
       LEFT JOIN doctors_services ds ON ds.id_doctor = a.id_doctor AND ds.id_service = a.id_service
-      ${id_user ? "WHERE a.id_user = $1" : ""}
-      ORDER BY a.booking_date, a.booking_hour
     `;
 
-    const params = id_user ? [id_user] : [];
+    const params = [];
+    let conditions = [];
+
+    if (id_user) {
+      conditions.push(`a.id_user = $${params.length + 1}`);
+      params.push(id_user);
+    }
+
+    if (startDate) {
+      conditions.push(`a.booking_date >= $${params.length + 1}`);
+      params.push(startDate);
+    }
+
+    if (endDate) {
+      conditions.push(`a.booking_date <= $${params.length + 1}`);
+      params.push(endDate);
+    }
+
+    if (doctor) {
+      conditions.push(`a.id_doctor = $${params.length + 1}`);
+      params.push(doctor);
+    }
+
+    if (conditions.length > 0) {
+      query += ` WHERE ${conditions.join(" AND ")}`;
+    }
+
+    query += ` ORDER BY a.booking_date, a.booking_hour`;
+
+    console.log(query);
 
     const appointments = await database.query(query, params);
 
@@ -34,6 +65,7 @@ const getAppointmentById = async (id) => {
   try {
     const query = `
       SELECT 
+        u.name AS user,
         a.id_appointment,
         s.description AS service,
         d.name AS doctor,
@@ -44,6 +76,7 @@ const getAppointmentById = async (id) => {
       FROM appointments a
       JOIN doctors d ON a.id_doctor = d.id_doctor
       JOIN services s ON a.id_service = s.id_service
+      JOIN users u ON a.id_user = u.id_user
       LEFT JOIN doctors_services ds ON ds.id_doctor = a.id_doctor AND ds.id_service = a.id_service
       WHERE id_appointment = $1
       ORDER BY a.booking_date, a.booking_hour;
